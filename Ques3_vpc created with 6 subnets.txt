@@ -1,0 +1,87 @@
+
+1.created a VPC with CIDR block 10.0.0.0/16
+
+ ==>  $ aws ec2 create-vpc --cidr-block 10.0.0.0/16 --region us-east-1
+
+2.Noted down the vpc id
+  
+   vpc-03b18309d6645d605
+    
+3.Using the VPC ID from the previous step, created a subnet with a 10.0.0.0/19 CIDR block 
+
+  in us-east-1 region in us-east-1a availability region 
+  
+ ==>$ aws ec2 create-subnet --vpc-id vpc-03b18309d6645d605 --cidr-block 10.0.0.0/19 --region us-east-1 --availability-zone us-east-1a
+ 
+    ==> subnet-0293fb6bc4cda1ebd
+
+4.created one more subnet in same avaliability region us-east-1a that is private
+   
+  ==>$ aws ec2 create-subnet --vpc-id vpc-03b18309d6645d605 --cidr-block 10.0.32.0/19 --region us-east-1 --availability-zone us-east-1a
+
+    ==>subnet-0b818987c95060263
+
+5.created one public and one private subnet in avaliability region us-east-1b
+
+ 
+  ==>$ aws ec2 create-subnet --vpc-id vpc-03b18309d6645d605 --cidr-block 10.0.64.0/19 --region us-east-1 --availability-zone us-east-1b
+
+  ==> $ aws ec2 create-subnet --vpc-id vpc-03b18309d6645d605 --cidr-block 10.0.96.0/19 --region us-east-1 --availability-zone us-east-1b
+
+6.created two subnets in another avaliability region us-east-1c
+
+
+   ==>  $ aws ec2 create-subnet --vpc-id vpc-03b18309d6645d605 --cidr-block 10.0.128.0/19 --region us-east-1 --availability-zone us-east-1c
+
+  ==> $ aws ec2 create-subnet --vpc-id vpc-03b18309d6645d605 --cidr-block 10.0.160.0/19 --region us-east-1 --availability-zone us-east-1c
+
+
+7. create an internet gateway and noted down the id
+  
+  ==>  $ aws ec2 create-internet-gateway --region us-east-1
+
+     ===> igw-088663ac081cb4983
+
+
+8.  attached the IGW to vpc
+
+
+  ==>  $ aws ec2 attach-internet-gateway --vpc-id vpc-03b18309d6645d605 --internet-gateway-id igw-088663ac081cb4983 --region us-east-1
+
+
+9. created a custom route table and noted down the id of it.
+
+-==> $ aws ec2 create-route-table --vpc-id vpc-03b18309d6645d605 --region us-east-1
+
+  ==> rtb-0101e45521be97bc3
+
+10.Create a route in the route table that points all traffic (0.0.0.0/0) to the Internet gateway.
+
+==>  $ aws ec2 create-route --route-table-id rtb-0101e45521be97bc3 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-088663ac081cb4983 --region us-east-1
+{
+
+
+11.Route table is associated with a subnet in each availability zone in VPC
+  
+so that traffic from that subnet is routed to the Internet gateway.
+
+This makes the respective subnet as a public subnet
+
+==>  $ aws ec2 associate-route-table  --subnet-id subnet-0293fb6bc4cda1ebd --route-table-id rtb-0101e45521be97bc3 --region us-east-1
+ 
+==> $ aws ec2 associate-route-table  --subnet-id subnet-0b2b26264bb1fa0cc --route-table-id rtb-0101e45521be97bc3 --region us-east-1
+
+==>  $ aws ec2 associate-route-table  --subnet-id subnet-065edb85e0b995765 --route-table-id rtb-0101e45521be97bc3 --region us-east-1
+
+12.modified the public IP addressing behavior of subnet so that an instance launched into it 
+
+ automatically receives a public IP address.
+
+==>  $ aws ec2 modify-subnet-attribute --subnet-id subnet-0293fb6bc4cda1ebd --map-public-ip-on-launch --region us-east-1
+
+
+
+
+
+
+

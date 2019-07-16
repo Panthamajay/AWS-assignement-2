@@ -1,0 +1,44 @@
+
+Step 1:Launched an ubuntu instance.
+
+ Added the security group rules  with opening the ports through HTTP, HTTPS
+
+Step 2:Added the following start-up script in the user data (Inside the ec2 console) which installs an apache sever 
+
+and creates an index.html file while launching the instance.
+
+  START-UP SCRIPT:  
+		
+		#!/bin/bash
+		sudo apt get update 
+		sudo apt -y install apache2
+		sudo mkdir -p /var/www/html/mywebsite
+		sudo chown ubuntu /var/www/
+		sudo chmod -R o+r /var/www/
+		sudo chown -R 755 /var/www/
+		echo "<html><body><h1> This is the first website. </h1></boody></html>" > /var/www/html/mywebsite/index.html
+		sudo cp /etc/apache2/sites-available/000-default-conf /etc/apache2/sites-available/mywebsite.config 
+
+Step 3: Created an image of this instance.
+
+Step 4: selected the configuration in launching configurations tab
+
+Step 5: Created a group in the auto scaling.
+
+Step 6: Choosen the launch configuration that I have created.
+
+
+Step 7: Selected the group size,network and the 2 subnet in different availability zones
+
+Step 8: configured load balancer.
+
+Step 9: Choosen the classic load balancer, assigned security gps, provided a certificate and also configured health check.
+
+Step 10: Created a target group under load balancing.
+
+Step 11: went to auto scaling groups and choosed the group and edited it. Here added the load balancer and the target groups that I have created.
+
+The listner configuration be
+
+    The port is set to HTTP and the target group I have created is chosen
+
